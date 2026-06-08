@@ -16,6 +16,7 @@
 | Validation | **Zod** (`src/lib/validation.ts`) | validate before any DB write or AI call |
 | Tests | **Vitest** + **React Testing Library**, co-located `*.test.tsx` | scaffolded by greenfield `--with-vitest` |
 | CI/CD | **GitHub Actions** (lint + build + test) → **Vercel** | scaffolded by `--with-actions` |
+| Dates | **date-fns + date-fns-tz** | ALL date logic via these libs; format/compute in UTC (`formatInTimeZone(d,'UTC',…)`); NEVER hand-roll date math |
 | Auth | **None** — single-user app | explicit Brief decision; no session/user model |
 
 ## 2. Data model — `prisma/schema.prisma`
