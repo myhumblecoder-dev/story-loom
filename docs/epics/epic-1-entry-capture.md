@@ -4,7 +4,7 @@
 
 ---
 
-## Story 1.1 — Database schema, Prisma client, and week helpers
+## Story 1 — Database schema, Prisma client, and week helpers
 
 **Depends on:** (none)
 
@@ -22,9 +22,9 @@
 
 ---
 
-## Story 1.2 — Entry validation and `createEntry` Server Action
+## Story 2 — Entry validation and createEntry Server Action
 
-**Depends on:** Story 1.1
+**Depends on:** Story 1
 
 **Files to create:**
 - `src/lib/validation.ts`
@@ -38,9 +38,9 @@
 
 ---
 
-## Story 1.3 — EntryForm component
+## Story 3 — EntryForm component
 
-**Depends on:** Story 1.2
+**Depends on:** Story 2
 
 **Files to create:**
 - `src/components/EntryForm.tsx`
@@ -54,9 +54,9 @@
 
 ---
 
-## Story 1.4 — EntryList component and wired home page
+## Story 4 — EntryList component and wired home page
 
-**Depends on:** Story 1.2
+**Depends on:** Story 2
 
 **Files to create:**
 - `src/components/EntryList.tsx`
@@ -69,5 +69,5 @@
 **Acceptance Criteria:**
 - `src/app/actions.ts` gains `listEntriesForWeek(weekStart: Date): Promise<JournalEntry[]>` — fetches entries where `createdAt >= weekStart && createdAt < weekStart + 7 days`, ordered by `createdAt desc`.
 - `EntryList` is a server component that renders the list of entries with relative timestamps; shows "No entries yet this week." when empty.
-- `src/app/page.tsx` calls `listEntriesForWeek(currentWeekStart())` and renders `<EntryForm />` above `<EntryList entries={…} />`.
+- `src/app/page.tsx` calls `listEntriesForWeek(currentWeekStart())` and renders `<EntryForm />` above `<EntryList entries={...} />`.
 - `EntryList.test.tsx` covers: renders entries in order, shows empty state, renders timestamps.

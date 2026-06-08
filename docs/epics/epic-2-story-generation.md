@@ -4,9 +4,9 @@
 
 ---
 
-## Story 2.1 — `generateWeeklyStory` Server Action
+## Story 5 — generateWeeklyStory Server Action
 
-**Depends on:** Story 1.2
+**Depends on:** Story 2
 
 **Files to modify:**
 - `src/app/actions.ts`
@@ -20,9 +20,9 @@
 
 ---
 
-## Story 2.2 — WeeklyStoryPanel component
+## Story 6 — WeeklyStoryPanel component and wired home page
 
-**Depends on:** Story 2.1
+**Depends on:** Story 4, Story 5
 
 **Files to create:**
 - `src/components/WeeklyStoryPanel.tsx`
@@ -35,5 +35,5 @@
 - `WeeklyStoryPanel` is a `"use client"` component that accepts `initialStory: WeeklyStory | null` and `weekStart: Date` props.
 - When `initialStory` is null: renders a "Generate this week's story" button; on click calls `generateWeeklyStory(weekStart)`, shows "Generating…" during the call, then displays the story text on success or an error message on failure.
 - When `initialStory` is present: renders the story text in a shadcn/ui `Card` with a "Regenerate" button that triggers the same flow.
-- `src/app/page.tsx` calls `getStoryForWeek(currentWeekStart())` and renders `<WeeklyStoryPanel initialStory={…} weekStart={…} />` below `EntryList`.
+- `src/app/page.tsx` calls `getStoryForWeek(currentWeekStart())` and renders `<WeeklyStoryPanel initialStory={...} weekStart={...} />` below `EntryList`.
 - `WeeklyStoryPanel.test.tsx` covers: shows generate button when no story (mocks action), shows pending state, displays story text after success, shows regenerate button when story present, shows error on failure.
