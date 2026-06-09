@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { db } from '@/lib/db'
-import { createEntry } from './actions'
+import { saveWeeklyStory } from './actions'
 
 vi.mock('@/lib/db', () => ({
   db: {
@@ -10,29 +10,23 @@ vi.mock('@/lib/db', () => ({
 }))
 
 describe('actions', () => {
-  it('createEntry persists a valid entry via db.journalEntry.create and returns the created row', async () => {
-    const mockEntry = {
+  it('saveWeeklyStory upserts by weekStart with the story and returns the row', async () => {
+    const mockWeeklyStory = {
       id: '1',
-      text: 'Hello world',
-      createdAt: new Date(Date.UTC(2023, 5, 15)),
+      weekStart: new Date(Date.UTC(2023, 5, 15)),
+      story: 'This is a weekly story',
+      createdAt: new Date(Date.UTC(2023, 5, 16)),
     }
     
-    vi.mocked(db.journalEntry.create).mockResolvedValue(mockEntry)
+    vi.mocked(db.weeklyStory.upsert).mockResolvedValue(mockWeeklyStory)
     
-    const result = await createEntry('Hello world')
+    const result = await saveWeeklyStory(new Date(Date.UTC(2023, 5, 15)), 'This is a weekly story')
     
-    expect(db.journalEntry.create).toHaveBeenCalledWith({
-      data: { text: 'Hello world' }
+    expect(db.weeklyStory.upsert).toHaveBeenCalledWith({
+      where: { weekStart: new Date(Date.UTC(2023, 5, 15)) },
+      update: { story: 'This is a weekly story' },
+      create: { weekStart: new Date(Date.UTC(2023, 5, 15)), story: 'This is a weekly story' }
     })
-    expect(result).toEqual({ data: mockEntry })
-  })
-
-  it('createEntry rejects whitespace-only text with the required-field error and does not call the database', async () => {
-    vi.mocked(db.journalEntry.create).mockClear()
-    
-    const result = await createEntry('   ')
-    
-    expect(result).toEqual({ error: 'Entry text is required.' })
-    expect(db.journalEntry.create).not.toHaveBeenCalled()
+    expect(result).toEqual(mockWeeklyStory)
   })
 })
