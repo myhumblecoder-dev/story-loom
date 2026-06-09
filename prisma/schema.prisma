@@ -16,9 +16,8 @@ model JournalEntry {
 
 model WeeklyStory {
   id        String    @id @default(cuid())
-  weekStart DateTime
+  weekStart DateTime  @unique
   story     String
   createdAt DateTime  @default(now())
-  @@index([weekStart])
   @@index([createdAt])
 }
