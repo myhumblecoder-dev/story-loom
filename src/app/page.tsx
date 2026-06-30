@@ -5,9 +5,13 @@ import { createEntry } from '@/app/actions';
 import { listEntriesForWeek } from '@/lib/entries';
 import { EntryForm } from '@/components/EntryForm';
 import { EntryList } from '@/components/EntryList';
+import { getStoryForWeek } from '@/lib/stories';
+import { WeeklyStoryPanel } from '@/components/WeeklyStoryPanel';
 
 export default async function Home() {
-  const entries = await listEntriesForWeek(currentWeekStart());
+  const weekStart = currentWeekStart();
+  const entries = await listEntriesForWeek(weekStart);
+  const story = await getStoryForWeek(weekStart);
 
   return (
     <main className="flex flex-col items-center gap-8 py-12 px-4 max-w-3xl mx-auto">
@@ -21,6 +25,9 @@ export default async function Home() {
       </div>
       <div className="w-full">
         <EntryList entries={entries} />
+      </div>
+      <div className="w-full">
+        <WeeklyStoryPanel initialStory={story} weekStart={weekStart} />
       </div>
     </main>
   );
