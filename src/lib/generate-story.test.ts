@@ -1,36 +1,46 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { generateText } from 'ai'
-import { anthropic } from '@ai-sdk/anthropic'
 import { generateStory } from './generate-story'
-
-vi.mock('ai', () => ({ generateText: vi.fn() }))
-vi.mock('@ai-sdk/anthropic', () => ({ anthropic: vi.fn() }))
 
 describe('generate-story', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.stubGlobal('fetch', vi.fn())
   })
 
-  it('generateStory returns the text produced by generateText', async () => {
-    vi.mocked(generateText).mockResolvedValue({ text: 'The generated story' } as { text: string })
+  it('generateStory returns the Ollama response text — `vi.stubGlobal(\'fetch\', vi.fn())`, mock it to resolve `{ ok: true, json: async () => ({ response: \'The generated story\' }) }`, assert the result is `\'The generated story\'`', async () => {
+    const mockResponse = {
+      ok: true,
+      json: async () => ({ response: 'The generated story' }),
+    }
+    vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
     const result = await generateStory([{ text: 'Entry 1' }])
 
     expect(result).toBe('The generated story')
-    expect(generateText).toHaveBeenCalled()
   })
 
-  it('generateStory builds a prompt that includes each entry\'s text', async () => {
-    vi.mocked(generateText).mockResolvedValue({ text: '...' } as { text: string })
-    const entries = [{ text: 'Entry A' }, { text: 'Entry B' }]
+  it('generateStory sends a prompt containing the entries — call with `[{ text: \'Entry A\' }, { text: \'Entry B\' }]`, then assert the fetch was called and the request body (JSON.parse of the `body` arg) `.prompt` contains `\'- Entry A\'` and `\'- Entry B\'`', async () => {
+    const mockResponse = {
+      ok: true,
+      json: async () => ({ response: 'The generated story' }),
+    }
+    vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
-    await generateStory(entries)
+    const testEntries = [{ text: 'Entry A' }, { text: 'Entry B' }]
 
-    expect(generateText).toHaveBeenCalledWith(
+    await generateStory(testEntries)
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/api/generate'),
       expect.objectContaining({
-        prompt: expect.stringContaining('- Entry A\n- Entry B')
+        method: 'POST',
+        body: expect.stringContaining('- Entry A'),
       })
     )
-    expect(anthropic).toHaveBeenCalledWith('claude-3-5-haiku-20241022')
+
+    const callArgs = vi.mocked(fetch).mock.calls[0][1]
+    const body = JSON.parse(callArgs.body as string)
+    expect(body.prompt).toContain('- Entry A')
+    expect(body.prompt).toContain('- Entry B')
   })
 })
